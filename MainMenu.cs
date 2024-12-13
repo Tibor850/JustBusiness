@@ -22,13 +22,11 @@ class MainMenu
 		bool validInput = false;
 		while (!validInput)
 		{
+			validInput = true;
 			string input = Console.ReadLine();
-			if (input == "1")
-			{
-				Game.s.Start();
-				validInput = true;
-			}
+			if (input == "1") Game.s.Start();
 			else if (input == "0") validInput = true;
+			else validInput = false;
 		}
 	}
 }

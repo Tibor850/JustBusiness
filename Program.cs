@@ -8,6 +8,7 @@ class Program
 		Game.Initialize();
 		MainMenu.Initialize();
 		NavigationWindow.Initialize();
+		SettingsWindow.Initialize();
 
 		MainMenu.s.Show();
 	}

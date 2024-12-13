@@ -5,11 +5,11 @@ class NavigationWindow
 {
 	public static NavigationWindow s;
 	public bool active = false;
+	public int windowWidth = 100;
+	public int windowHeight = 28;
 
 	int zoom = 10;
 	readonly double[] zoomValue = { 0.0009765625, 0.001953125, 0.00390625, 0.0078125, 0.015625, 0.03125, 0.0625, 0.125, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0, 256.0, 512.0, 1024.0 };
-	int windowWidth = 32;
-	int windowHeight = 32;
 	char[][] frameBuffer;
 	StringBuilder display = new();
 
@@ -138,7 +138,7 @@ class NavigationWindow
 		Console.WriteLine("    asd         - p");
 		Console.WriteLine("    zxc");
 		Console.WriteLine($"             Шаг: {1 / Zoom:g2} сут.");
-		Console.WriteLine("0 - Меню");
+		Console.WriteLine("0 - Параметры");
 
 		bool validInput = false;
 		while (!validInput)
@@ -163,6 +163,11 @@ class NavigationWindow
 			{
 				ZoomOut();
 				Update();
+			}
+			else if (input == "0")
+			{
+				active = false;
+				SettingsWindow.s.Show();
 			}
 			else validInput = false;
 		}
