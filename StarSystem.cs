@@ -1,11 +1,13 @@
 using System;
+using System.Collections.Generic;
 
 class StarSystem
 {
-	static readonly Random rnd = Program.rnd;
 	public string name;
 	public (double x, double y) position;
+	public readonly List<Planet> planets;
 
+	static readonly Random rnd = Program.rnd;
 	const double MIN_DISTANCE = 5.0;
 
 	public StarSystem()
@@ -28,6 +30,20 @@ class StarSystem
 				position = (x, y);
 				break;
 			}
+		}
+		planets = new();
+		for (int index = 1; index < rnd.Next(11); index++)
+		{
+			Planet planet = new(this, index);
+			planets.Add(planet);
+		}
+	}
+
+	public void Update()
+	{
+		foreach(Planet planet in planets)
+		{
+			planet.Update();
 		}
 	}
 

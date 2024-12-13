@@ -24,7 +24,6 @@ class Game
 		date = 0;
 		GenerateMap();
 		SpawnPlayer();
-		NavigationWindow.s.UpdateDisplaySize();
 		NavigationWindow.s.Show();
 		GameLoop();
 	}
@@ -47,8 +46,12 @@ class Game
 	{
 		while (running)
 		{
-			if (NavigationWindow.s.active) NavigationWindow.s.Update();
 			date += 1 / NavigationWindow.s.Zoom;
+			foreach(StarSystem starSystem in starSystems)
+			{
+				starSystem.Update();
+			}
+			if (NavigationWindow.s.active) NavigationWindow.s.Update();
 		}
 	}
 }

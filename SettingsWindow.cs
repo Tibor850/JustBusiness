@@ -50,5 +50,4 @@ class SettingsWindow
 			else validInput = false;
 		}
 	}
-
 }

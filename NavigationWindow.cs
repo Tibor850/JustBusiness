@@ -21,7 +21,10 @@ class NavigationWindow
 		}
 	}
 
-	private NavigationWindow() { }
+	private NavigationWindow()
+	{
+		UpdateDisplaySize();
+	}
 
 	public static void Initialize()
 	{
@@ -78,13 +81,19 @@ class NavigationWindow
 		{
 			(int x, int y) windowPoint = WindowCoordinates(starSystem.position, Game.s.player.position);
 			PutChar('*', windowPoint);
-			if (Zoom > 0.5)
+			if (Zoom > 0.5 && Zoom < 128.0) 
 			{
 				for (int index = 0; index < starSystem.name.Length; index++)
 				{
 					PutChar(starSystem.name[index], (windowPoint.x + 1 + index, windowPoint.y + 1));
 				}
-
+			}
+			else if (Zoom >= 128.0)
+			{
+				for (int index = 0; index < starSystem.planets.Count; index++)
+				{
+					PutChar('o', WindowCoordinates(starSystem.planets[index].position, Game.s.player.position));
+				}
 			}
 		}
 	}
@@ -187,8 +196,13 @@ class NavigationWindow
 
 	(int x, int y) WindowCoordinates((double x, double y) point, (double x, double y) center)
 	{
-		int displayX = (int)Math.Round((point.x - center.x) * zoomValue[zoom] + windowWidth / 2, MidpointRounding.AwayFromZero);
-		int displayY = (int)Math.Round((point.y - center.y) * zoomValue[zoom] + windowHeight / 2, MidpointRounding.AwayFromZero);
+		int displayX = (int)((point.x - center.x) * zoomValue[zoom]) + windowWidth / 2;
+		int displayY = (int)((point.y - center.y) * zoomValue[zoom]) + windowHeight / 2;
 		return (displayX, displayY);
+	}
+
+	static double SqDistance((double x, double y) point1, (double x, double y) point2)
+	{
+		return (point1.x - point2.x) * (point1.x - point2.x) + (point1.y - point2.y) * (point1.y - point2.y);
 	}
 }
