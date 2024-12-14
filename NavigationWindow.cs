@@ -77,6 +77,12 @@ class NavigationWindow
 			// Координаты центра звезды на дисплее
 			(int x, int y) centerPoint = WindowCoordinates(starSystem.position, Game.s.player.position);
 
+			// Пропускаем звездные системы не попадающие в область дисплея
+			if (centerPoint.x + starSystem.Size / zoom < 0 ||
+				centerPoint.x - starSystem.Size / zoom > windowWidth ||
+				centerPoint.y + starSystem.Size / zoom < 0 ||
+				centerPoint.y - starSystem.Size / zoom > windowHeight) continue;
+
 			// Отображаем название звезды
 			if (zoom >= 128 && zoom <= 2048)
 			{
@@ -96,7 +102,15 @@ class NavigationWindow
 			}
 
 			// Изображение звезды
-			RenderChar('*', centerPoint);
+			if (zoom == 1)
+			{
+				RenderSprite(starSprite[1], centerPoint, centerSprite: true);
+			}
+			else if (zoom == 2)
+			{
+				RenderSprite(starSprite[0], centerPoint, centerSprite: true);
+			}
+			else RenderChar('*', centerPoint);
 		}
 	}
 
@@ -106,6 +120,33 @@ class NavigationWindow
 		if (point.x >= 0 && point.x < windowWidth && point.y >= 0 && point.y < windowHeight)
 		{
 			frameBuffer[point.y][point.x] = symbol;
+		}
+	}
+
+	// Рендер спрайта
+	void RenderSprite(string[] sprite, (int x, int y) point, bool centerSprite = false, bool transparent = true)
+	{
+		// Сдвиг спрайта для центрирования
+		(int x, int y) pointShift = (0, 0);
+		if (centerSprite)
+		{
+			pointShift.x = -sprite[0].Length / 2;
+			pointShift.y = -sprite.Length / 2;
+		}
+
+		// Перебираем все точки спрайта
+		for (int spriteY = 0; spriteY < sprite.Length; spriteY++)
+		{
+			for (int spriteX = 0; spriteX < sprite[spriteY].Length; spriteX++)
+			{
+				// Если нужна прозрачность пропускаем пустые точки
+				if (transparent && sprite[spriteY][spriteX] == ' ') continue;
+
+				if (point.x + pointShift.x + spriteX >= 0 && point.x + pointShift.x + spriteX < windowWidth && point.y + pointShift.y + spriteY >= 0 && point.y + pointShift.y + spriteY < windowHeight)
+				{
+					frameBuffer[point.y + pointShift.y + spriteY][point.x + pointShift.x + spriteX] = sprite[spriteY][spriteX];
+				}
+			}
 		}
 	}
 
@@ -207,4 +248,22 @@ class NavigationWindow
 		int displayY = (int)(0.5 * (point.y - center.y) / zoom) + windowHeight / 2;
 		return (displayX, displayY);
 	}
+
+	static readonly string[][] starSprite = new string[][]
+	{
+		new string[]
+		{
+			@" # ",
+			@"###",
+			@" # "
+		},
+		new string[]
+		{
+			@"   ###   ",
+			@" ####### ",
+			@"#########",
+			@" ####### ",
+			@"   ###   ",
+		},
+	};
 }

@@ -4,11 +4,11 @@ class Planet
 {
 	public string name; // Название планеты
 	public (double x, double y) position; // Координаты в мире
+	public readonly double orbitRadius; // Радиус орбиты
 
 	static readonly Random rnd = Program.rnd;
 	readonly StarSystem starSystem; // Родительская звездная система
 	readonly double phase0; // Начальная фаза планеты на орбите (рад)
-	readonly double orbitRadius; // Радиус орбиты
 	readonly double period; // Период обращения вокруг звезды (сутки)
 
 	public Planet(StarSystem starSystem, int number)
@@ -16,7 +16,7 @@ class Planet
 		this.starSystem = starSystem;
 		name = $"{starSystem.name}.{number}";
 		phase0 = Math.Tau * rnd.NextDouble();
-		orbitRadius = number * 10;
+		orbitRadius = number * 20;
 		period = 30.0 * number; // 30 дней для самой ближней планеты
 	}
 

@@ -10,6 +10,7 @@ class StarSystem
 	static readonly Random rnd = Program.rnd;
 	const double MIN_DISTANCE = 1000.0; // Минимальное расстояние до ближайшей зведы
 	const int MAX_PLANETS = 10; // Максимальное количество планет у звезды
+
 	public StarSystem()
 	{
 		name = $"Система {Game.s.starSystems.Count + 1}";
@@ -32,10 +33,23 @@ class StarSystem
 		while (minSqDistance < MIN_DISTANCE * MIN_DISTANCE);
 
 		planets = new();
-		for (int index = 0; index < 10/*rnd.Next(MAX_PLANETS + 1)*/; index++)
+		for (int index = 0; index < rnd.Next(MAX_PLANETS + 1); index++)
 		{
 			Planet planet = new(this, index + 1);
 			planets.Add(planet);
+		}
+	}
+
+	// Размер звездной системы
+	public double Size
+	{
+		get
+		{
+			if (planets.Count > 0)
+			{
+				return planets[planets.Count - 1].orbitRadius;
+			}
+			else return 0;
 		}
 	}
 
