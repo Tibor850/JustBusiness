@@ -3,38 +3,38 @@ using System.Collections.Generic;
 
 class StarSystem
 {
-	public string name;
-	public (double x, double y) position;
-	public readonly List<Planet> planets;
+	public string name; // Название звездной системы
+	public (double x, double y) position; // Координаты звезды в мире
+	public readonly List<Planet> planets; // Планеты системы
 
 	static readonly Random rnd = Program.rnd;
-	const double MIN_DISTANCE = 5.0;
-
+	const double MIN_DISTANCE = 1000.0; // Минимальное расстояние до ближайшей зведы
+	const int MAX_PLANETS = 10; // Максимальное количество планет у звезды
 	public StarSystem()
 	{
 		name = $"Система {Game.s.starSystems.Count + 1}";
-		while (true)
-		{
-			double x = Game.MAP_SIZE * rnd.NextDouble();
-			double y = Game.MAP_SIZE * rnd.NextDouble();
 
-			double minSqDistance = Game.MAP_SIZE * Game.MAP_SIZE;
+		// Размещаем звезду в мире
+		double minSqDistance = Game.MAP_SIZE * Game.MAP_SIZE;
+		do
+		{
+			position = new()
+			{
+				x = Game.MAP_SIZE * rnd.NextDouble(),
+				y = Game.MAP_SIZE * rnd.NextDouble()
+			};
 			foreach (StarSystem starSystem in Game.s.starSystems)
 			{
-				double sqDistance = SqDistance((x, y), starSystem.position);
+				double sqDistance = SqDistance(position, starSystem.position);
 				if (minSqDistance > sqDistance) minSqDistance = sqDistance;
 			}
-
-			if (minSqDistance > MIN_DISTANCE * MIN_DISTANCE)
-			{
-				position = (x, y);
-				break;
-			}
 		}
+		while (minSqDistance < MIN_DISTANCE * MIN_DISTANCE);
+
 		planets = new();
-		for (int index = 1; index < rnd.Next(11); index++)
+		for (int index = 0; index < 10/*rnd.Next(MAX_PLANETS + 1)*/; index++)
 		{
-			Planet planet = new(this, index);
+			Planet planet = new(this, index + 1);
 			planets.Add(planet);
 		}
 	}

@@ -4,22 +4,13 @@ using System.Text;
 class NavigationWindow
 {
 	public static NavigationWindow s;
-	public bool active = false;
-	public int windowWidth = 100;
+	public bool active = false; // Статус активности окна для обновления
+	public int windowWidth = 100; // Размер окна навигационной карты
 	public int windowHeight = 28;
+	public int zoom = 1024; // Масштаб карты
 
-	int zoom = 10;
-	readonly double[] zoomValue = { 0.0009765625, 0.001953125, 0.00390625, 0.0078125, 0.015625, 0.03125, 0.0625, 0.125, 0.25, 0.5, 1.0, 2.0, 4.0, 8.0, 16.0, 32.0, 64.0, 128.0, 256.0, 512.0, 1024.0 };
-	char[][] frameBuffer;
-	StringBuilder display = new();
-
-	public double Zoom
-	{
-		get
-		{
-			return zoomValue[zoom];
-		}
-	}
+	char[][] frameBuffer; // Буфер дисплея карты
+	StringBuilder display = new(); // Дисплей карты
 
 	private NavigationWindow()
 	{
@@ -44,6 +35,7 @@ class NavigationWindow
 		UserInput();
 	}
 
+	// Изменение размера дисплея карты
 	public void UpdateDisplaySize()
 	{
 		frameBuffer = new char[windowHeight][];
@@ -54,15 +46,17 @@ class NavigationWindow
 		display = new StringBuilder(windowWidth * windowHeight);
 	}
 
+	// Рендер карты
 	void RenderMap()
 	{
 		ClearFrame();
 		RenderStars();
 		RenderShips();
-		RenderWindow();
+		RenderWindowFrame();
 		Render();
 	}
 
+	// Очистка буфера дисплея
 	void ClearFrame()
 	{
 		for (int y = 0; y < windowHeight; y++)
@@ -75,30 +69,39 @@ class NavigationWindow
 		display.Clear();
 	}
 
+	// Рендер звезд на дисплее
 	void RenderStars()
 	{
 		foreach (StarSystem starSystem in Game.s.starSystems)
 		{
-			(int x, int y) windowPoint = WindowCoordinates(starSystem.position, Game.s.player.position);
-			PutChar('*', windowPoint);
-			if (Zoom > 0.5 && Zoom < 128.0) 
+			// Координаты центра звезды на дисплее
+			(int x, int y) centerPoint = WindowCoordinates(starSystem.position, Game.s.player.position);
+
+			// Отображаем название звезды
+			if (zoom >= 128 && zoom <= 2048)
 			{
 				for (int index = 0; index < starSystem.name.Length; index++)
 				{
-					PutChar(starSystem.name[index], (windowPoint.x + 1 + index, windowPoint.y + 1));
+					RenderChar(starSystem.name[index], (centerPoint.x + 1 + index, centerPoint.y + 1));
 				}
 			}
-			else if (Zoom >= 128.0)
+
+			// Отображаем планеты
+			if (zoom <= 128)
 			{
 				for (int index = 0; index < starSystem.planets.Count; index++)
 				{
-					PutChar('o', WindowCoordinates(starSystem.planets[index].position, Game.s.player.position));
+					RenderChar('o', WindowCoordinates(starSystem.planets[index].position, Game.s.player.position));
 				}
 			}
+
+			// Изображение звезды
+			RenderChar('*', centerPoint);
 		}
 	}
 
-	void PutChar(char symbol, (int x, int y) point)
+	// Рендер одного символа
+	void RenderChar(char symbol, (int x, int y) point)
 	{
 		if (point.x >= 0 && point.x < windowWidth && point.y >= 0 && point.y < windowHeight)
 		{
@@ -106,12 +109,14 @@ class NavigationWindow
 		}
 	}
 
+	// Рендер корабля игрока
 	void RenderShips()
 	{
 		frameBuffer[windowHeight / 2][windowWidth / 2] = 'A';
 	}
 
-	void RenderWindow()
+	// Отображение рамки карты
+	void RenderWindowFrame()
 	{
 		for (int x = 1; x < windowWidth - 1; x++)
 		{
@@ -129,6 +134,7 @@ class NavigationWindow
 		frameBuffer[windowHeight - 1][windowWidth - 1] = '╝';
 	}
 
+	// Вывод буфера на экран
 	void Render()
 	{
 		for (int line = 0; line < windowHeight; line++)
@@ -146,7 +152,7 @@ class NavigationWindow
 		Console.WriteLine("    qwe         + o");
 		Console.WriteLine("    asd         - p");
 		Console.WriteLine("    zxc");
-		Console.WriteLine($"             Шаг: {1 / Zoom:g2} сут.");
+		Console.WriteLine($"             Шаг: {zoom / 1024.0:g2} сут.");
 		Console.WriteLine("0 - Параметры");
 
 		bool validInput = false;
@@ -182,27 +188,23 @@ class NavigationWindow
 		}
 	}
 
-	void ZoomOut()
-	{
-		zoom--;
-		if (zoom < 0) zoom = 0;
-	}
-
 	void ZoomIn()
 	{
-		zoom++;
-		if (zoom > zoomValue.Length - 1) zoom = zoomValue.Length - 1;
+		if (zoom <= 1) return;
+		zoom /= 2;
 	}
 
+	void ZoomOut()
+	{
+		if (zoom >= 65536) return;
+		zoom *= 2;
+	}
+
+	// Координаты на дисплее карты
 	(int x, int y) WindowCoordinates((double x, double y) point, (double x, double y) center)
 	{
-		int displayX = (int)((point.x - center.x) * zoomValue[zoom]) + windowWidth / 2;
-		int displayY = (int)((point.y - center.y) * zoomValue[zoom]) + windowHeight / 2;
+		int displayX = (int)((point.x - center.x) / zoom) + windowWidth / 2;
+		int displayY = (int)(0.5 * (point.y - center.y) / zoom) + windowHeight / 2;
 		return (displayX, displayY);
-	}
-
-	static double SqDistance((double x, double y) point1, (double x, double y) point2)
-	{
-		return (point1.x - point2.x) * (point1.x - point2.x) + (point1.y - point2.y) * (point1.y - point2.y);
 	}
 }

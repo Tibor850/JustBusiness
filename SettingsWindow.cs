@@ -13,8 +13,8 @@ class SettingsWindow
 
 	public void Show()
 	{
-		bool validInput = false;
-		while (!validInput)
+		bool validInput = true;
+		do
 		{
 			Console.Clear();
 			Console.WriteLine("Параметры игры");
@@ -24,7 +24,6 @@ class SettingsWindow
 			Console.WriteLine("0 - Назад");
 			Console.WriteLine();
 
-			validInput = true;
 			string input = Console.ReadLine();
 			if (input == "1")
 			{
@@ -49,5 +48,6 @@ class SettingsWindow
 			else if (input == "0") NavigationWindow.s.Show();
 			else validInput = false;
 		}
+		while (!validInput);
 	}
 }

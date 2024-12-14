@@ -19,14 +19,14 @@ class MainMenu
 		Console.WriteLine("0 - Выход из игры");
 		Console.WriteLine();
 
-		bool validInput = false;
-		while (!validInput)
+		bool validInput = true;
+		do
 		{
-			validInput = true;
 			string input = Console.ReadLine();
 			if (input == "1") Game.s.Start();
 			else if (input == "0") validInput = true;
 			else validInput = false;
 		}
+		while (!validInput);
 	}
 }
