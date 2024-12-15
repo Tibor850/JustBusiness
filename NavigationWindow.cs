@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Text;
 
 class NavigationWindow
@@ -72,6 +73,9 @@ class NavigationWindow
 	// Рендер звезд на дисплее
 	void RenderStars()
 	{
+		StarSystem? nearestSystem = null; // Ближайшая к игроку система
+		double minSqDistance = Game.MAP_SIZE * Game.MAP_SIZE * 2; // Наименьшее расстояние
+
 		foreach (StarSystem starSystem in Game.s.starSystems)
 		{
 			// Координаты центра звезды на дисплее
@@ -113,16 +117,85 @@ class NavigationWindow
 			}
 
 			// Изображение звезды
-			if (zoom == 1)
-			{
-				RenderSprite(starSprite[1], centerPoint, centerSprite: true);
-			}
-			else if (zoom == 2)
-			{
-				RenderSprite(starSprite[0], centerPoint, centerSprite: true);
-			}
+			if (zoom == 1) RenderSprite(starSprite[1], centerPoint, centerSprite: true);
+			else if (zoom == 2) RenderSprite(starSprite[0], centerPoint, centerSprite: true);
+			else if (zoom <= 128) RenderChar('#', centerPoint);
 			else RenderChar('*', centerPoint);
+
+			// Определяем ближайшую звезду
+			if (zoom <= 128)
+			{
+				double sqDistance = SqDistance(starSystem.position, Game.s.player.position);
+				if (sqDistance < minSqDistance)
+				{
+					nearestSystem = starSystem;
+					minSqDistance = sqDistance;
+				}
+			}
 		}
+
+		// Выводим информацию о ближайшей системе
+		if (nearestSystem != null) ShowSystemInfo(nearestSystem);
+	}
+
+	// Панель информации о системе
+	void ShowSystemInfo(StarSystem starSystem)
+	{
+		List<Planet> spacePorts = starSystem.SpacePorts;
+		int panelLines = spacePorts.Count + 7;
+		if (spacePorts.Count == 0) panelLines++;
+		string[] panelSprite = new string[panelLines];
+		panelSprite[0] = "╔";
+		panelSprite[1] = $"║ {starSystem.name}";
+		panelSprite[2] = "║";
+		panelSprite[3] = $"║ Количество планет: {starSystem.planets.Count}";
+		panelSprite[4] = "║";
+		panelSprite[5] = "║ Обитаемые пленеты:";
+		if (spacePorts.Count == 0) panelSprite[6] = "║ Нет";
+		else
+		{
+			for (int index = 0; index < spacePorts.Count; index++)
+			{
+				panelSprite[6 + index] = $"║ {spacePorts[index].name}";
+			}
+		}
+		panelSprite[^1] = "╚";
+
+		// Находим самую длинную строку
+		int maxLength = 0;
+		foreach (string line in panelSprite)
+		{
+			if (line.Length > maxLength) maxLength = line.Length;
+		}
+
+		// Выравниваем правую сторону спрайта и добавляем рамку
+		for (int lineIndex = 0; lineIndex < panelLines; lineIndex++)
+		{
+			string newline = panelSprite[lineIndex];
+			for (int charIndex = newline.Length; charIndex < maxLength + 2; charIndex++)
+			{
+				// Первая строка
+				if (lineIndex == 0)
+				{
+					if (charIndex < maxLength + 1) newline += '═';
+					else newline += '╗';
+				}
+				// Последняя строка
+				else if (lineIndex == panelLines - 1)
+				{
+					if (charIndex < maxLength + 1) newline += '═';
+					else newline += '╝';
+				}
+				// Остальные строки
+				else
+				{
+					if (charIndex < maxLength + 1) newline += ' ';
+					else newline += '║';
+				}
+			}
+			panelSprite[lineIndex] = newline;
+		}
+		RenderSprite(panelSprite, (1, 1), transparent: false);
 	}
 
 	// Рендер одного символа
@@ -260,21 +333,24 @@ class NavigationWindow
 		return (displayX, displayY);
 	}
 
-	static readonly string[][] starSprite = new string[][]
+	static double SqDistance((double x, double y) point1, (double x, double y) point2)
 	{
-		new string[]
-		{
+		return (point1.x - point2.x) * (point1.x - point2.x) + (point1.y - point2.y) * (point1.y - point2.y);
+	}
+
+	static readonly string[][] starSprite = 
+	[
+		[
 			@" # ",
 			@"###",
 			@" # "
-		},
-		new string[]
-		{
+		],
+		[
 			@"   ###   ",
 			@" ####### ",
 			@"#########",
 			@" ####### ",
 			@"   ###   ",
-		},
-	};
+		],
+	];
 }

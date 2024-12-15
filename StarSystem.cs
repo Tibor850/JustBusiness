@@ -33,7 +33,7 @@ class StarSystem
 		double minSqDistance;
 		do
 		{
-			minSqDistance = Game.MAP_SIZE * Game.MAP_SIZE;
+			minSqDistance = Game.MAP_SIZE * Game.MAP_SIZE * 2;
 			position = new()
 			{
 				x = Game.MAP_SIZE * rnd.NextDouble(),
@@ -46,6 +46,20 @@ class StarSystem
 			}
 		}
 		while (minSqDistance < MIN_DISTANCE * MIN_DISTANCE);
+	}
+
+	// Космопорты системы
+	public List<Planet> SpacePorts
+	{
+		get
+		{
+			List<Planet> spacePorts = new();
+			foreach(Planet planet in planets)
+			{
+				if (planet.hasSpacePort) spacePorts.Add(planet);
+			}
+			return spacePorts;
+		}
 	}
 
 	public void Update()
