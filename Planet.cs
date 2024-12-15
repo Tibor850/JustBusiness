@@ -2,14 +2,15 @@ using System;
 
 class Planet
 {
-	public string name; // Название планеты
-	public (double x, double y) position; // Координаты в мире
-	public readonly double orbitRadius; // Радиус орбиты
+	public string name; // РќР°Р·РІР°РЅРёРµ РїР»Р°РЅРµС‚С‹
+	public (double x, double y) position; // РљРѕРѕСЂРґРёРЅР°С‚С‹ РІ РјРёСЂРµ
+	public readonly double orbitRadius; // Р Р°РґРёСѓСЃ РѕСЂР±РёС‚С‹
+	public bool hasSpacePort; // РќР°Р»РёС‡РёРµ РєРѕСЃРјРѕРїРѕСЂС‚Р° РЅР° РїР»Р°РЅРµС‚Рµ
 
 	static readonly Random rnd = Program.rnd;
-	readonly StarSystem starSystem; // Родительская звездная система
-	readonly double phase0; // Начальная фаза планеты на орбите (рад)
-	readonly double period; // Период обращения вокруг звезды (сутки)
+	readonly StarSystem starSystem; // Р РѕРґРёС‚РµР»СЊСЃРєР°СЏ Р·РІРµР·РґРЅР°СЏ СЃРёСЃС‚РµРјР°
+	readonly double phase0; // РќР°С‡Р°Р»СЊРЅР°СЏ С„Р°Р·Р° РїР»Р°РЅРµС‚С‹ РЅР° РѕСЂР±РёС‚Рµ (СЂР°Рґ)
+	readonly double period; // РџРµСЂРёРѕРґ РѕР±СЂР°С‰РµРЅРёСЏ РІРѕРєСЂСѓРі Р·РІРµР·РґС‹ (СЃСѓС‚РєРё)
 
 	public Planet(StarSystem starSystem, int number)
 	{
@@ -17,12 +18,13 @@ class Planet
 		name = $"{starSystem.name}.{number}";
 		phase0 = Math.Tau * rnd.NextDouble();
 		orbitRadius = number * 20;
-		period = 30.0 * number; // 30 дней для самой ближней планеты
+		period = 30.0 * number; // 30 РґРЅРµР№ РґР»СЏ СЃР°РјРѕР№ Р±Р»РёР¶РЅРµР№ РїР»Р°РЅРµС‚С‹
+		hasSpacePort = rnd.Next(10) == 0; // РљРѕСЃРјРѕРїРѕСЂС‚ РЅР° РєР°Р¶РґРѕР№ РґРµСЃСЏС‚РѕР№ РїР»Р°РЅРµС‚Рµ
 	}
 
 	public void Update()
 	{
-		// Текущая фаза планеты на орбите
+		// РўРµРєСѓС‰Р°СЏ С„Р°Р·Р° РїР»Р°РЅРµС‚С‹ РЅР° РѕСЂР±РёС‚Рµ
 		double phase = phase0 + Math.Tau * Game.s.date / period;
 		position.x = starSystem.position.x + orbitRadius * Math.Cos(phase);
 		position.y = starSystem.position.y + orbitRadius * Math.Sin(phase);

@@ -5,10 +5,10 @@ class Game
 {
 	public static Game s;
 
-	public const double MAP_SIZE = 1e6; // Размер карты
-	public List<StarSystem> starSystems = new(); // Звёздные системы
-	public SpaceShip player; // Корабль игрока
-	public double date; // Игровая дата
+	public const double MAP_SIZE = 1e6; // Р Р°Р·РјРµСЂ РєР°СЂС‚С‹
+	public List<StarSystem> starSystems = new(); // Р—РІС‘Р·РґРЅС‹Рµ СЃРёСЃС‚РµРјС‹
+	public SpaceShip player; // РљРѕСЂР°Р±Р»СЊ РёРіСЂРѕРєР°
+	public double date; // РРіСЂРѕРІР°СЏ РґР°С‚Р°
 	static readonly Random rnd = Program.rnd;
 	bool running = true;
 
@@ -19,7 +19,7 @@ class Game
 		if (s == null) s = new();
 	}
 
-	// Начало игры
+	// РќР°С‡Р°Р»Рѕ РёРіСЂС‹
 	public void Start()
 	{
 		GenerateMap();
@@ -28,7 +28,7 @@ class Game
 		GameLoop();
 	}
 
-	// Создание карты
+	// РЎРѕР·РґР°РЅРёРµ РєР°СЂС‚С‹
 	void GenerateMap()
 	{
 		for (int index = 0; index < 400; index++)
@@ -37,14 +37,14 @@ class Game
 		}
 	}
 
-	// Размещение корабля игрока
+	// Р Р°Р·РјРµС‰РµРЅРёРµ РєРѕСЂР°Р±Р»СЏ РёРіСЂРѕРєР°
 	void SpawnPlayer()
 	{
 		player = new();
 		player.position = (MAP_SIZE * rnd.NextDouble(), MAP_SIZE * rnd.NextDouble());
 	}
 
-	// Основной игровой цикл
+	// РћСЃРЅРѕРІРЅРѕР№ РёРіСЂРѕРІРѕР№ С†РёРєР»
 	void GameLoop()
 	{
 		date = -NavigationWindow.s.zoom / 1024.0;

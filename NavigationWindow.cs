@@ -95,9 +95,20 @@ class NavigationWindow
 			// Отображаем планеты
 			if (zoom <= 128)
 			{
-				for (int index = 0; index < starSystem.planets.Count; index++)
+				foreach (Planet planet in starSystem.planets)
 				{
-					RenderChar('o', WindowCoordinates(starSystem.planets[index].position, Game.s.player.position));
+					(int x, int y) planetPosition = WindowCoordinates(planet.position, Game.s.player.position);
+					if (planet.hasSpacePort) RenderChar('0', planetPosition);
+					else RenderChar('O', planetPosition);
+
+					// Отображаем название планеты
+					if (zoom <= 32)
+					{
+						for (int index = 0; index < planet.name.Length; index++)
+						{
+							RenderChar(planet.name[index], (planetPosition.x + 1 + index, planetPosition.y + 1));
+						}
+					}
 				}
 			}
 
@@ -244,8 +255,8 @@ class NavigationWindow
 	// Координаты на дисплее карты
 	(int x, int y) WindowCoordinates((double x, double y) point, (double x, double y) center)
 	{
-		int displayX = (int)((point.x - center.x) / zoom) + windowWidth / 2;
-		int displayY = (int)(0.5 * (point.y - center.y) / zoom) + windowHeight / 2;
+		int displayX = (int)point.x / zoom - (int)center.x / zoom + windowWidth / 2;
+		int displayY = (int)point.y / 2 / zoom - (int)center.y / 2 / zoom + windowHeight / 2;
 		return (displayX, displayY);
 	}
 

@@ -2,8 +2,8 @@ using System;
 
 class SpaceShip
 {
-	public (double x, double y) position; // Координаты в мире
-	const double SQR2 = 1.4142135623731; // Карень квадратный из 2
+	public (double x, double y) position; // РљРѕРѕСЂРґРёРЅР°С‚С‹ РІ РјРёСЂРµ
+	const double SQR2 = 1.4142135623731; // РљР°СЂРµРЅСЊ РєРІР°РґСЂР°С‚РЅС‹Р№ РёР· 2
 	
 	public void MoveUpLeft()
 	{
