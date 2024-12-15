@@ -78,10 +78,10 @@ class NavigationWindow
 			(int x, int y) centerPoint = WindowCoordinates(starSystem.position, Game.s.player.position);
 
 			// Пропускаем звездные системы не попадающие в область дисплея
-			if (centerPoint.x + starSystem.Size / zoom < 0 ||
-				centerPoint.x - starSystem.Size / zoom > windowWidth ||
-				centerPoint.y + starSystem.Size / zoom < 0 ||
-				centerPoint.y - starSystem.Size / zoom > windowHeight) continue;
+			if (centerPoint.x + starSystem.size / zoom < 0 ||
+				centerPoint.x - starSystem.size / zoom > windowWidth ||
+				centerPoint.y + starSystem.size / zoom < 0 ||
+				centerPoint.y - starSystem.size / zoom > windowHeight) continue;
 
 			// Отображаем название звезды
 			if (zoom >= 128 && zoom <= 2048)

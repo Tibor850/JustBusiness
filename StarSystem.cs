@@ -6,6 +6,7 @@ class StarSystem
 	public string name; // Название звездной системы
 	public (double x, double y) position; // Координаты звезды в мире
 	public readonly List<Planet> planets; // Планеты системы
+	public readonly double size; // Размер системы
 
 	static readonly Random rnd = Program.rnd;
 	const double MIN_DISTANCE = 1000.0; // Минимальное расстояние до ближайшей зведы
@@ -15,10 +16,24 @@ class StarSystem
 	{
 		name = $"Система {Game.s.starSystems.Count + 1}";
 
+		// Создаём планеты
+		planets = new();
+		for (int index = 0; index < rnd.Next(MAX_PLANETS + 1); index++)
+		{
+			Planet planet = new(this, index + 1);
+			planets.Add(planet);
+		}
+		if (planets.Count > 0)
+		{
+			size = planets[^1].orbitRadius;
+		}
+		else size = 0;
+
 		// Размещаем звезду в мире
-		double minSqDistance = Game.MAP_SIZE * Game.MAP_SIZE;
+		double minSqDistance;
 		do
 		{
+			minSqDistance = Game.MAP_SIZE * Game.MAP_SIZE;
 			position = new()
 			{
 				x = Game.MAP_SIZE * rnd.NextDouble(),
@@ -31,26 +46,6 @@ class StarSystem
 			}
 		}
 		while (minSqDistance < MIN_DISTANCE * MIN_DISTANCE);
-
-		planets = new();
-		for (int index = 0; index < rnd.Next(MAX_PLANETS + 1); index++)
-		{
-			Planet planet = new(this, index + 1);
-			planets.Add(planet);
-		}
-	}
-
-	// Размер звездной системы
-	public double Size
-	{
-		get
-		{
-			if (planets.Count > 0)
-			{
-				return planets[planets.Count - 1].orbitRadius;
-			}
-			else return 0;
-		}
 	}
 
 	public void Update()
